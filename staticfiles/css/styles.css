@@ -1,0 +1,173 @@
+/* ---------------------------------------------------- */
+/* Paleta: Celeste, Gris Oscuro, y Blanco (Elegante y Serena) */
+/* Foco: Mayor definición y estructura en cajas y elementos. */
+/* Colores: 
+    - #e4e7ec: Fondo Base (Gris Claro, mayor contraste)
+    - #2980b9: Color Primario (Celeste Acero)
+    - #2c3e50: Color Oscuro (Gris Medianoche para Navbar/Footer/Títulos) 
+/* ---------------------------------------------------- */
+
+/* Estilos globales del body: Base Gris Claro Sereno con más contraste */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #e4e7ec; /* Un gris muy sutil para que el blanco de las tarjetas resalte más */
+    min-height: 100vh; 
+    display: flex;
+    flex-direction: column; 
+}
+
+/* Scrollbar estético */
+body::-webkit-scrollbar {
+    width: 8px;
+}
+body::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+body::-webkit-scrollbar-thumb {
+    background: #adb5bd; /* Tono de gris suave */
+    border-radius: 4px;
+}
+body::-webkit-scrollbar-thumb:hover {
+    background: #6c757d;
+}
+
+/* Estilo de la tarjeta: Bordes suaves y Sombra de profundidad */
+.card, .shadow-lg {
+    border-radius: 1.25rem !important; /* Bordes más redondeados para suavidad */
+    border: 1px solid rgba(0, 0, 0, 0.05) !important; /* Borde muy sutil para definir la caja */
+    background-color: white; /* Aseguramos blanco para el contenido */
+    /* Sombra más marcada y moderna para efecto de "flotación" */
+    box-shadow: 0 12px 40px rgba(44, 62, 80, 0.12), 0 6px 15px rgba(44, 62, 80, 0.08) !important;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+/* Efecto de levantamiento al pasar el mouse */
+.card:hover {
+    transform: translateY(-3px); /* Un levantamiento más notorio */
+    box-shadow: 0 18px 50px rgba(44, 62, 80, 0.15), 0 8px 20px rgba(44, 62, 80, 0.1) !important;
+}
+
+/* Contenedor principal: Más espacio vertical */
+main.container {
+    flex-grow: 1;
+    padding-top: 40px !important;
+    padding-bottom: 40px !important;
+}
+
+/* ---------------------------------------------------- */
+/* Personalización de colores de Bootstrap */
+/* ---------------------------------------------------- */
+
+/* Color Oscuro (para Header, Navbar y Footer): Gris Medianoche */
+.bg-dark { 
+    background-color: #2c3e50 !important; 
+}
+.navbar-brand:hover, .nav-link:hover {
+    color: #ffffff !important; /* Blanco puro en hover */
+}
+
+/* Color Primario: Celeste Acero */
+.bg-primary { 
+    background-color: #2980b9 !important; 
+}
+.text-primary { 
+    color: #2980b9 !important; 
+}
+
+/* Botones Primarios: Más definidos y con sombra de color */
+.btn-primary { 
+    background-color: #2980b9 !important; 
+    border-color: #2980b9 !important; 
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 4px 10px rgba(41, 128, 185, 0.3);
+    border-radius: 0.75rem !important;
+}
+.btn-primary:hover {
+    background-color: #1a6a9b !important;
+    border-color: #1a6a9b !important;
+    transform: translateY(-2px); 
+    box-shadow: 0 6px 15px rgba(41, 128, 185, 0.5) !important;
+}
+
+/* Estilo de foco para formularios */
+.form-control:focus, .form-select:focus, .select2-container--bootstrap-5 .select2-selection {
+    border-color: #5d9ad3 !important; 
+    box-shadow: 0 0 0 0.25rem rgba(41, 128, 185, 0.35) !important;
+}
+.select2-container--default .select2-selection--single {
+    border-radius: 0.5rem !important;
+}
+
+/* ---------------------------------------------------- */
+/* Estilos de Reportes/Tablas/Gráficos/Títulos */
+/* ---------------------------------------------------- */
+
+/* Estilo para los títulos: Más impactantes */
+h1, h2, .section-title {
+    color: #2c3e50; 
+    font-weight: 700; /* Mayor negrita */
+    padding-bottom: 15px;
+    border-bottom: 1px solid #d9e0e7; /* Línea separadora más sutil */
+    margin-bottom: 30px;
+}
+
+/* Estilo para las tablas de reportes (Mejorando la definición) */
+.table {
+    border: none;
+    border-collapse: separate;
+    border-radius: 1rem; /* Bordes redondeados */
+    overflow: hidden; /* Necesario para que el border-radius de la tabla funcione bien */
+    border: 1px solid #e9ecef; /* Contorno general sutil de la tabla */
+}
+.table thead th {
+    background-color: #f7f9fc; 
+    color: #2c3e50; 
+    border-bottom: 3px solid #bdc3c7; /* Línea de separación de encabezado más gruesa */
+    font-weight: 700;
+    padding: 15px 20px;
+}
+.table tbody tr:hover {
+    background-color: #e0e5ea; /* Gris muy claro al pasar el mouse para mayor definición */
+}
+.table tbody td {
+    padding: 15px 20px;
+    vertical-align: middle;
+    border-top: 1px solid #f0f3f5; /* Separador de fila que casi se fusiona con el fondo */
+}
+
+/* Estilos para las tarjetas de resumen del dashboard (números grandes) */
+.card-body p.fs-1, .card-body p.display-4 { 
+    font-weight: 800; /* Ultra-negrita para que los números resalten */
+    margin-top: 10px;
+}
+
+/* Contenedores de gráficos para adaptarse a la tarjeta */
+.chart-container {
+    position: relative;
+    height: 35vh; /* Aumentamos la altura del gráfico */
+    width: 100%;
+    margin: 0 auto;
+}
+.chart-container-large {
+    position: relative;
+    height: 45vh; /* Aumentamos la altura del gráfico grande */
+    width: 100%;
+    margin: 0 auto;
+}
+
+/* *** GESTIÓN DE COLORES DE TEXTO (Asegurando visibilidad en todas las páginas) *** */
+
+/* 1. Las tarjetas con color (bg-info, bg-success, etc.) SIEMPRE tienen texto blanco */
+.card.text-white .card-title, 
+.card.text-white .card-text {
+    color: white !important;
+}
+
+/* 2. Las tarjetas sin clase 'text-white' (es decir, las blancas/claras) tienen texto oscuro */
+.card:not(.text-white) .card-title, 
+.card:not(.text-white) .card-text {
+    color: #2c3e50 !important; /* Asegura el color Gris Medianoche */
+}
+/* Forzamos el fondo blanco SÓLO para las tarjetas que no tienen color de fondo (gráficos, formularios) */
+.card:not([class*="bg-"]) {
+    background-color: white !important;
+}

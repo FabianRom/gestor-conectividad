@@ -1,0 +1,221 @@
+{% extends 'gestor/base.html' %}
+{% load static %}
+
+{% block title %}Mapa de Escuelas con Colores{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Mapa de Escuelas por Conectividad</h1>
+
+<div class="row mb-3 g-2 align-items-end filtro-mapa">
+
+    <div class="col-md-2">
+        <label class="form-label">Región</label>
+        <select id="f_region" class="form-select">
+            <option value=""></option>
+            {% for r in regiones %}
+                <option value="{{ r.id }}">{{ r.nombre }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="col-md-2">
+        <label class="form-label">Distrito</label>
+        <select id="f_distrito" class="form-select">
+            <option value=""></option>
+            {% for d in distritos %}
+                <option value="{{ d.id }}">{{ d.nombre }}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <label for="predio" class="form-label">Buscar por Predio</label>
+        <input type="text" id="predio" name="predio" class="form-control" placeholder="Escriba el predio">
+    </div>
+
+    <div class="col-md-2">
+        <label class="form-label">CUE</label>
+        <input id="f_cue" class="form-control" type="text" placeholder="Ej: 60064300">
+    </div>
+    <!--
+<div class="caja">
+    Creo  que el div  Solo con Internet y piso  lo tendria que sacar aca comienza
+</div>
+-->
+    <div class="col-md-2">
+        <label class="form-label d-block">&nbsp;</label>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="f_internet">
+            <label class="form-check-label" for="f_internet">Solo con Internet</label>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="f_piso">
+            <label class="form-check-label" for="f_piso">Solo con Piso</label>
+        </div>
+    </div>
+    <!--
+<div class="caja">
+    Creo  que el div  Solo con Internet y piso  lo tendria que sacar aca termina 
+</div>
+-->
+
+    <div class="col-md-3 d-flex justify-content-end gap-2">
+    <button id="btn_limpiar" class="btn btn-outline-secondary shadow-sm">
+        <i class="fas fa-eraser me-2"></i> Limpiar
+    </button>
+
+    <button id="btn_buscar" class="btn btn-primary shadow-sm">
+        <i class="fas fa-search me-2"></i> Buscar
+    </button>
+</div>
+
+
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <div id="mapa_escuelas" style="height: 600px;"></div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
+<link rel="stylesheet" href="{% static 'css/popup.css' %}">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+function escapeHtml(text) {
+    if (!text) return '';
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+
+    const map = L.map('mapa_escuelas').setView([-36.6769, -60.5598], 6);
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+
+    const markersLayer = L.layerGroup().addTo(map);
+
+    const greenIcon = L.icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34]
+    });
+
+    const redIcon = L.icon({
+        iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
+        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+        iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34]
+    });
+
+    function buildFilterParams() {
+        const params = new URLSearchParams();
+
+        if (f_region.value) params.append("region", f_region.value);
+        if (f_distrito.value) params.append("distrito", f_distrito.value);
+
+        const pred = predio.value.trim();
+        if (pred) params.append("predio", pred);
+
+        const cue = f_cue.value.trim();
+        if (cue) params.append("cue", cue);
+
+        if (f_internet.checked) params.append("tiene_internet", "1");
+        if (f_piso.checked) params.append("tiene_piso", "1");
+
+        return params.toString();
+    }
+
+    function cargarEscuelas() {
+        const b = map.getBounds();
+        const filters = buildFilterParams();
+        const base = `/api/escuelas/bounds/?minLat=${b.getSouth()}&maxLat=${b.getNorth()}&minLng=${b.getWest()}&maxLng=${b.getEast()}`;
+        const url = filters ? base + "&" + filters : base;
+
+        markersLayer.clearLayers();
+
+        fetch(url)
+        .then(r => r.json())
+        .then(data => {
+
+            const bounds = [];
+
+            data.forEach(e => {
+                if (!e.latitud) return;
+
+                const icon = e.tiene_internet ? greenIcon : redIcon;
+                const m = L.marker([e.latitud, e.longitud], { icon }).addTo(markersLayer);
+
+                bounds.push([e.latitud, e.longitud]);
+
+                m.on("click", () => {
+                    fetch(`/api/escuela/${e.cue}/`)
+                    .then(r => r.json())
+                    .then(info => {
+                        const html = `
+                            <div class="popup-card">
+                                <div class="card-header d-flex align-items-start">
+                                    <div style="flex:1;">
+                                        <div style="font-size:0.95rem">${escapeHtml(info.nombre)}</div>
+                                        <small>CUE: ${escapeHtml(info.cue)}</small>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <div class="popup-row"><div class="label">Categoría:</div><div class="value">${escapeHtml(info.categoria || 'Sin dato')}</div></div>
+                                    <div class="popup-row"><div class="label">Estado enlace:</div><div class="value">${escapeHtml(info.estado_conectividad || 'Sin dato')}</div></div>
+                                    <div class="popup-row"><div class="label">Proveedor:</div><div class="value">${escapeHtml(info.proveedor || 'Sin dato')}</div></div>
+                                    <div class="popup-row"><div class="label">Plan piso:</div><div class="value">${escapeHtml(info.plan_piso || 'Sin dato')}</div></div>
+                                </div>
+                                <div class="card-footer">
+                                    <a href="/escuela/${info.cue}/" class="btn btn-sm btn-primary">Ver</a>
+                                </div>
+                            </div>
+                        `;
+                        m.bindPopup(html).openPopup();
+                    });
+                });
+            });
+
+            if (bounds.length === 1) {
+                map.setView(bounds[0], 15);
+            } else if (bounds.length > 1) {
+                map.fitBounds(bounds, { padding: [40, 40] });
+            }
+
+        });
+    }
+
+    btn_buscar.addEventListener("click", e => {
+        e.preventDefault();
+        cargarEscuelas();
+    });
+
+    btn_limpiar.addEventListener("click", e => {
+        e.preventDefault();
+
+        f_region.value = "";
+        f_distrito.value = "";
+        predio.value = "";
+        f_cue.value = "";
+        f_internet.checked = false;
+        f_piso.checked = false;
+
+        markersLayer.clearLayers();
+
+        // Reiniciar vista a toda la provincia
+        map.setView([-36.6769, -60.5598], 6);
+    });
+
+});
+</script>
+{% endblock %}

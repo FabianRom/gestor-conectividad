@@ -1,0 +1,18 @@
+{% extends 'gestor/base.html' %}
+
+{% block title %}{{ titulo_pagina }}{% endblock %}
+
+{% extends 'gestor/base.html' %}
+
+{% block title %}{{ titulo_pagina }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">{{ titulo_pagina }}</h1>
+        <p class="lead">Página de configuración de usuario para {{ usuario.username }}.</p>
+        
+        <p>Aquí puedes agregar formularios para cambiar la contraseña o actualizar la información de contacto.</p>
+    </div>
+</div>
+{% endblock %}

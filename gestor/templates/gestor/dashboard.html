@@ -1,0 +1,219 @@
+{% extends 'gestor/base.html' %}
+{% load static %}
+
+{% block title %}Dashboard Escolar{% endblock %}
+
+{% block extra_css %}
+{% endblock %}
+
+{% block content %}
+<h1 class="section-title"><i class="fas fa-chart-line me-2"></i> Dashboard General</h1>
+
+<div class="row g-4 mb-5">
+    
+    <div class="col-md-6 col-lg-3">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <i class="fas fa-school stat-icon"></i>
+                <div class="stat-value">{{ total_escuelas|default:"0" }}</div>
+                <div class="stat-label text-uppercase">Total de Escuelas</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-3">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <i class="fas fa-wifi stat-icon text-success"></i>
+                <div class="stat-value text-success">{{ con_internet|default:"0" }}</div>
+                <div class="stat-label text-uppercase">Con Conectividad</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <i class="fas fa-laptop-house stat-icon text-info"></i>
+                <div class="stat-value text-info">{{ con_piso|default:"0" }}</div>
+                <div class="stat-label text-uppercase">Con Piso Tecnológico</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-3">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <i class="fas fa-exclamation-triangle stat-icon text-danger"></i>
+                <div class="stat-value text-danger">{{ sin_internet|default:"0" }}</div>
+                <div class="stat-label text-uppercase">Sin Conectividad</div>
+            </div>
+        </div>
+    </div>
+</div>
+<h2 class="section-title mt-4"><i class="fas fa-satellite-dish me-2"></i> Conectividad por Programa</h2>
+
+<div class="row g-4 mb-5">
+
+    <div class="col-lg-6">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <i class="fas fa-map-marked-alt stat-icon text-primary"></i>
+                <div class="stat-value text-primary">{{ conectadas_pba|default:"0" }}</div>
+                <div class="stat-label text-uppercase">Conectadas por PBA</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card stat-card h-100">
+            <div class="card-body">
+                <i class="fas fa-globe-americas stat-icon text-warning"></i>
+                <div class="stat-value text-warning">{{ conectadas_pnce|default:"0" }}</div>
+                <div class="stat-label text-uppercase">Conectadas por PNCE</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="row g-4 mb-5">
+    
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header card-header-accent">
+                <i class="fas fa-chart-pie me-2"></i> Estado de Conectividad
+            </div>
+            <div class="card-body">
+                <canvas id="internetChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header card-header-accent">
+                <i class="fas fa-chart-bar me-2"></i> Escuelas por Categoría
+            </div>
+            <div class="card-body">
+                <canvas id="categoriaChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+</div>
+<h2 class="section-title mt-4"><i class="fas fa-info-circle me-2"></i> Detalle de Estadísticas</h2>
+<div class="row g-4 mb-5">
+    
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="fas fa-cogs me-2"></i> Estado de Piso Tecnológico
+            </div>
+            <div class="card-body">
+                <p class="mb-1"><strong>Con Piso Tecnológico:</strong> <span class="text-info">{{ con_piso|default:"0" }}</span></p>
+                <p><strong>Sin Piso Tecnológico:</strong> <span class="text-danger">{{ sin_piso|default:"0" }}</span></p>
+                <a href="{% url 'reportes_generales' %}" class="btn btn-sm btn-outline-secondary">Ver Reporte Completo</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header">
+                <i class="fas fa-percentage me-2"></i> Tasa de Cobertura de Internet
+            </div>
+            <div class="card-body">
+                <h3 class="stat-value text-primary">{{ porcentaje_conectividad|default:"0.00" }}%</h3>
+                <p class="stat-label">Escuelas con conectividad del total.</p>
+                <a href="{% url 'reporte_internet' %}" class="btn btn-sm btn-outline-primary">Detalle de Internet</a>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+
+{{ conectadas_por_categoria|json_script:"conectadas_data_json" }}
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    // 1. LEER LOS DATOS DEL ELEMENTO SCRIPT CREADO POR DJANGO
+    const jsonScriptElement = document.getElementById('conectadas_data_json');
+    const conectadasData = jsonScriptElement ? JSON.parse(jsonScriptElement.textContent) : [];
+
+    // --- GRÁFICO 1: ESTADO DE CONECTIVIDAD (Donut Chart) ---
+    const internetCtx = document.getElementById('internetChart').getContext('2d');
+    const internetChart = new Chart(internetCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Con Internet', 'Sin Internet'],
+            datasets: [{
+                data: [{{ con_internet|default:0 }}, {{ sin_internet|default:0 }}],
+                backgroundColor: [
+                    '#00bcd4', // Turquesa/Cian
+                    '#e74c3c'  // Rojo
+                ],
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            aspectRatio: 1.5,
+            plugins: {
+                legend: { position: 'top' },
+                title: {
+                    display: true,
+                    text: 'Distribución de Escuelas por Conectividad'
+                }
+            }
+        }
+    });
+
+
+    // --- GRÁFICO 2: ESCUELAS CONECTADAS POR CATEGORÍA (Bar Chart) ---
+    if (conectadasData && conectadasData.length > 0) {
+        
+        const categoriasConectadas = conectadasData.map(item => item.nombre);
+        const totalesConectados = conectadasData.map(item => item.total_conectadas); 
+
+        const categoriaCtx = document.getElementById('categoriaChart').getContext('2d');
+        const categoriaChart = new Chart(categoriaCtx, {
+            type: 'bar',
+            data: {
+                labels: categoriasConectadas,
+                datasets: [{
+                    label: 'Escuelas Conectadas', 
+                    data: totalesConectados,
+                    backgroundColor: 'rgba(0, 188, 212, 0.7)',
+                    borderColor: 'rgba(0, 151, 167, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                aspectRatio: 1.5,
+                scales: {
+                    y: { beginAtZero: true }
+                },
+                plugins: {
+                    legend: { display: false },
+                    title: {
+                        display: true,
+                        text: 'Distribución de Cobertura de Internet por Categoría'
+                    }
+                }
+            }
+        });
+    } else {
+         // Muestra un mensaje si no hay datos en el contenedor del canvas
+         const canvasContainer = document.getElementById('categoriaChart').parentNode;
+         canvasContainer.innerHTML = "<div class='alert alert-warning text-center mt-3' role='alert'>No hay datos de escuelas conectadas por categoría para mostrar.</div>";
+    }
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,217 @@
+{% extends 'gestor/base.html' %}
+{% load static %}
+
+{% block title %}Detalles de {{ escuela.nombre }}{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- El CSS global maneja el estilo de la tarjeta, borde y sombra. -->
+    <!-- Se añade la clase 'section-title' para usar el estilo de encabezado definido en el CSS global. -->
+    <h1 class="mb-5 text-center section-title text-primary">{{ escuela.nombre }}</h1>
+
+    <!-- SECCIÓN DE TARJETAS DE INFORMACIÓN GENERAL, UBICACIÓN Y SERVICIOS -->
+    <div class="row align-items-stretch">
+        
+        <!-- Tarjeta 1: Información General (bg-primary -> Cian) -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-primary text-white text-center">
+                    <i class="fas fa-info-circle me-2"></i><span class="fw-bold fs-6">Información General</span>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2 fs-6"><strong>CUE:</strong> {{ escuela.cue }}</p>
+                    <p class="mb-2 fs-6"><strong>Clave Provincial:</strong> {{ escuela.clave_provincial|default_if_none:'Sin datos' }}</p>
+                    
+                    <p class="mb-2 fs-6"><strong>Matrícula:</strong> {{ escuela.matricula }}</p>
+                    <p class="mb-2 fs-6"><strong>Dependencia:</strong> {{ escuela.dependencia|default_if_none:'Sin datos' }}</p>
+                    <p class="mb-2 fs-6"><strong>Ámbito:</strong> {{ escuela.ambito|default_if_none:'Sin datos' }}</p>
+                    <p class="mb-2 fs-6"><strong>Turno:</strong> {{ escuela.turno|default_if_none:'Sin datos' }}</p>
+                    <p class="mb-2 fs-6"><strong>Categoría:</strong> {{ escuela.categoria|default_if_none:'Sin datos' }}</p>
+                    <p class="mb-2 fs-6"><strong>Tipo de Establecimiento:</strong> {{ escuela.tipo_establecimiento|default_if_none:'Sin datos' }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta 2: Ubicación y Mapa (bg-dark -> Gris Medianoche para mantener el tema) -->
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-header bg-dark text-white text-center">
+                    <i class="fas fa-map-marker-alt me-2"></i><span class="fw-bold fs-6">Ubicación</span>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2 fs-6"><strong>Predio:</strong> {{ escuela.predio.numero_predio|default_if_none:'Sin datos' }}</p>
+                    <p class="mb-2 fs-6"><strong>Región:</strong> {{ escuela.region.nombre|default_if_none:'Sin datos' }}</p>
+                    <p class="mb-2 fs-6"><strong>Distrito:</strong> {{ escuela.distrito|default_if_none:'Sin datos' }}</p>
+                    <p class="mb-2 fs-6"><strong>Ciudad:</strong> {{ escuela.ciudad|default_if_none:'Sin datos' }}</p>
+                    <p class="mb-2 fs-6"><strong>Dirección:</strong> {{ escuela.direccion|default_if_none:'Sin datos' }}</p>
+                    
+                    <hr class="my-3">
+                    <p class="mb-2 fs-6">
+                        <strong class="text-secondary">Coordenadas:</strong>
+                        {% if escuela.latitud and escuela.longitud %}
+                            <br>Latitud: {{ escuela.latitud|floatformat:6 }}
+                            <br>Longitud: {{ escuela.longitud|floatformat:6 }}
+                        {% else %}
+                            Sin datos
+                        {% endif %}
+                    </p>
+                    
+                    <!-- MAPA -->
+                    {% if escuela.latitud and escuela.longitud %}
+                        <div class="mt-4 pt-3 border-top">
+                            <h6 class="fw-bold mb-2 text-secondary">Vista de Mapa:</h6>
+                            <!-- La clase 'ratio' y 'rounded-3' de Bootstrap se usan aquí. -->
+                            <div class="ratio ratio-16x9 rounded-3 overflow-hidden shadow-sm">
+                                <iframe 
+                                    src="https://maps.google.com/maps?q={{ escuela.latitud|floatformat:6 }},{{ escuela.longitud|floatformat:6 }}&z=15&output=embed" 
+                                    frameborder="0" 
+                                    style="border:0; width: 100%; height: 100%;" 
+                                    allowfullscreen="" 
+                                    aria-hidden="false" 
+                                    tabindex="0">
+                                </iframe>
+                            </div>
+                        </div>
+                    {% else %}
+                        <div class="alert alert-warning mt-3 mb-0 py-2 fs-6" role="alert">
+                            No hay coordenadas disponibles para mostrar el mapa.
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Tarjeta 3: Estado de Servicios (Resumen) -->
+<div class="col-md-4 mb-4">
+    <div class="card h-100 shadow-sm">
+        <div class="card-header bg-success text-white text-center">
+            <i class="fas fa-wifi me-2"></i><span class="fw-bold fs-6">Estado de Servicios</span>
+        </div>
+        <div class="card-body">
+
+            <p class="mb-2 fs-6">
+                <strong>Tiene Internet:</strong>
+                {% if escuela.tiene_internet %}
+                    <span class="badge bg-success py-2 px-3 rounded-pill fw-bold">Sí</span>
+                {% else %}
+                    <span class="badge bg-danger py-2 px-3 rounded-pill fw-bold">No</span>
+                {% endif %}
+            </p>
+
+            <p class="mb-2 fs-6">
+                <strong>Tiene Piso Tecnológico:</strong>
+                {% if escuela.tiene_piso_tecnologico %}
+                    <span class="badge bg-success py-2 px-3 rounded-pill fw-bold">Sí</span>
+                {% else %}
+                    <span class="badge bg-danger py-2 px-3 rounded-pill fw-bold">No</span>
+                {% endif %}
+            </p>
+
+            <!-- NUEVO BLOQUE: otras escuelas del mismo predio -->
+            <hr class="my-3">
+
+            <strong class="fs-6 d-block mb-2 text-secondary">Comparte predio con:</strong>
+
+            {% if otras_escuelas_predio %}
+                <ul class="list-unstyled ms-2">
+                    {% for otra in otras_escuelas_predio %}
+                        <li class="mb-1">
+                            <a href="{% url 'detalle_escuela' otra.cue %}" class="text-primary fw-bold">
+                                {{ otra.cue }} - {{ otra.nombre }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted fs-6 ms-2">No hay otros CUE en este predio.</p>
+            {% endif %}
+            <!-- FIN BLOQUE NUEVO -->
+
+        </div>
+    </div>
+</div>
+
+    
+    <!-- DETALLES DE CONECTIVIDAD (CARD 4) -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-info text-white text-center">
+            <i class="fas fa-network-wired me-2"></i><span class="fw-bold fs-6">Detalles de Conectividad</span>
+        </div>
+        <div class="card-body p-4">
+            {% if servicios %}
+                {% for servicio in servicios %}
+                    <div class="row mb-4 border-bottom pb-3">
+                        <div class="col-md-6">
+                            <!-- El badge bg-success/bg-warning usará los colores definidos en su CSS global -->
+                            <p class="mb-2 fs-6"><strong>Plan de Enlace Estado:</strong> <span class="badge bg-{% if servicio.estado_conectividad == 'Activo' %}success{% else %}warning{% endif %}">{{ servicio.estado_conectividad|default_if_none:'Sin datos' }}</span></p>
+                            <p class="mb-2 fs-6"><strong>Proveedor:</strong> {{ servicio.proveedor.nombre|default_if_none:'Sin datos' }}</p>
+                            
+                            {# CAMBIO A velocidad_mbps para corregir la visualización de la velocidad #}
+                            <p class="mb-2 fs-6"><strong>Velocidad (Máx):</strong> {{ servicio.velocidad_mbps|default_if_none:'Sin datos' }} Mbps</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2 fs-6"><strong>Fecha de Instalación:</strong> {{ servicio.fecha_instalacion|date:"d/m/Y"|default_if_none:'Sin datos' }}</p>
+                            <p class="mb-2 fs-6"><strong>Método de Solicitud:</strong> {{ servicio.metodo_solicitud|default_if_none:'Sin datos' }}</p>
+                            <p class="mb-2 fs-6"><strong>Fecha de Mejora:</strong> {{ servicio.fecha_mejora|date:"d/m/Y"|default_if_none:'Sin datos' }}</p>
+                        </div>
+                        <div class="col-12">
+                            <p class="mb-2 fs-6"><strong>Observaciones:</strong> {{ servicio.observaciones|default_if_none:'Sin datos' }}</p>
+                        </div>
+                    </div>
+                    <!-- Separador entre servicios, omitido si es el último -->
+                    {% if not forloop.last %}<hr class="my-3">{% endif %}
+                {% empty %}
+                    <p class="text-muted text-center py-4">No hay servicios de conectividad registrados para esta escuela.</p>
+                {% endfor %}
+            {% else %}
+                <p class="text-muted text-center py-4">No hay servicios de conectividad registrados para esta escuela.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- DETALLES DE PISO TECNOLÓGICO (CARD 5) -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-warning text-dark text-center">
+            <i class="fas fa-desktop me-2"></i><span class="fw-bold fs-6">Detalles de Piso Tecnológico</span>
+        </div>
+        <div class="card-body p-4">
+            {% if pisos_tecnologicos %}
+                {% for piso in pisos_tecnologicos %}
+                    <div class="row mb-4 border-bottom pb-3">
+                        <div class="col-md-6">
+                            <p class="mb-2 fs-6"><strong>Plan de Piso:</strong> {{ piso.plan_piso.nombre|default_if_none:'Sin datos' }}</p>
+                            <p class="mb-2 fs-6"><strong>Proveedor:</strong> {{ piso.proveedor.nombre|default_if_none:'Sin datos' }}</p>
+                            <p class="mb-2 fs-6"><strong>Tipo de Piso Instalado:</strong> {{ piso.tipo_piso_instalado|default_if_none:'Sin datos' }}</p>
+                            <p class="mb-2 fs-6"><strong>Fecha de Finalización:</strong> {{ piso.fecha_terminado|date:"d/m/Y"|default_if_none:'Sin datos' }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2 fs-6"><strong>Tipo de Mejora:</strong> {{ piso.tipo_mejora|default_if_none:'Sin datos' }}</p>
+                            <p class="mb-2 fs-6"><strong>Fecha de Mejora:</strong> {{ piso.fecha_mejora|date:"d/m/Y"|default_if_none:'Sin datos' }}</p>
+                        </div>
+                        <div class="col-12">
+                            <p class="mb-2 fs-6"><strong>Observaciones:</strong> {{ piso.observaciones|default_if_none:'Sin datos' }}</p>
+                        </div>
+                    </div>
+                    <!-- Separador entre pisos tecnológicos, omitido si es el último -->
+                    {% if not forloop.last %}<hr class="my-3">{% endif %}
+                {% empty %}
+                    <p class="text-muted text-center py-4">No hay pisos tecnológicos registrados para esta escuela.</p>
+                {% endfor %}
+            {% else %}
+                <p class="text-muted text-center py-4">No hay pisos tecnológicos registrados para esta escuela.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Actions Footer -->
+    <div class="mt-5 text-center">
+        <!-- Los botones usan btn-primary y btn-success que están estilizados en su CSS global -->
+        <a href="{% url 'generar_excel_escuela' escuela.cue %}" class="btn btn-success me-3 py-2 px-4 fw-bold">
+            <i class="fas fa-file-excel me-2"></i> Generar Excel
+        </a>
+        <a href="{% url 'lista_escuelas' %}" class="btn btn-primary py-2 px-4 fw-bold">
+            <i class="fas fa-arrow-left me-2"></i> Volver a la lista de escuelas
+        </a>
+    </div>
+</div>
+{% endblock %}

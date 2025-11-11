@@ -1,0 +1,100 @@
+/* gestor/static/gestor/css/popup.css */
+
+/* Ajustes generales del popup Leaflet */
+.leaflet-popup-content-wrapper {
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    padding: 0 !important;
+    overflow: hidden;
+}
+
+/* Card interior para usar el estilo Bootstrap-like */
+.leaflet-popup .popup-card {
+    width: 100%;
+    font-size: 14px;
+}
+
+/* Header */
+.leaflet-popup .popup-card .card-header {
+    background: linear-gradient(90deg, #0d6efd, #198754);
+    color: #fff;
+    font-weight: 700;
+    padding: 8px 12px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+/* Body */
+.leaflet-popup .popup-card .card-body {
+    padding: 10px 12px;
+}
+
+/* Small label rows */
+.leaflet-popup .popup-row {
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    margin-bottom:6px;
+}
+
+.leaflet-popup .popup-row .label {
+    color:#6c757d;
+    font-weight:600;
+    min-width:110px;
+}
+
+.leaflet-popup .popup-row .value {
+    text-align:right;
+    white-space:nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Footer */
+.leaflet-popup .popup-card .card-footer {
+    background: #f8f9fa;
+    padding: 8px 12px;
+    display:flex;
+    gap:8px;
+    justify-content:flex-end;
+}
+
+/* Botón pequeño dentro del popup (se adapta a Bootstrap) */
+.leaflet-popup .btn-sm {
+    padding: .25rem .5rem;
+    font-size: .775rem;
+}
+
+/* Si quieres forzar un ancho máximo del popup */
+.leaflet-popup-content {
+    max-width: 340px !important;
+}
+
+
+.popup-card {
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    width: 100%;
+}
+.popup-card .card-header { display:flex; gap:8px; align-items:center; margin-bottom:6px; }
+.popup-card .card-body { font-size: 0.9rem; }
+.popup-row { display:flex; justify-content:space-between; gap:8px; padding:4px 0; border-bottom: 0; }
+.popup-row .label { font-weight:600; opacity:0.8; }
+.popup-row .value { text-align:right; opacity:0.95; }
+.card-footer { margin-top:8px; display:flex; gap:8px; justify-content:flex-end; }
+
+@media (max-width: 480px) {
+    .popup-card {
+        width: 220px !important;
+        padding: 8px;
+    }
+    .popup-card .card-body {
+        padding: 6px 4px;
+    }
+    .popup-row .label {
+        font-size: 0.75rem;
+    }
+    .popup-row .value {
+        font-size: 0.8rem;
+    }
+}

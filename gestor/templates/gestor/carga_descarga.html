@@ -1,0 +1,83 @@
+{% extends 'gestor/base.html' %}
+{% load static %}
+
+{% block title %}Carga y Descarga de Datos{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="mb-5 text-center">Herramientas de Gestión de Datos</h1>
+        
+        <!-- Alerta de Mensajes (para éxito/error de Django) -->
+        {% if messages %}
+            <div class="row">
+                <div class="col-md-8 offset-md-2">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- SECCIÓN 1: DESCARGA/EXPORTACIÓN DE DATOS -->
+        <div class="card shadow-sm mb-5">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0"><i class="fas fa-file-download me-2"></i> Descargar Base de Datos Completa</h3>
+            </div>
+            <div class="card-body text-center py-5">
+                <p class="lead">Haga clic en el botón de abajo para exportar todos los datos del sistema en formato CSV.</p>
+                <a href="{% url 'exportar_datos' %}" class="btn btn-primary btn-lg px-5">
+                    <i class="fas fa-database me-2"></i> Descargar Datos (CSV)
+                </a>
+                <p class="mt-3 text-muted">La descarga puede tardar unos minutos si la base de datos es muy grande.</p>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2: CARGA/IMPORTACIÓN MASIVA DE DATOS -->
+        <div class="card shadow-lg">
+            <div class="card-header bg-success text-white">
+                <h3 class="mb-0"><i class="fas fa-file-upload me-2"></i> Carga Masiva (Importar CSV)</h3>
+            </div>
+            <div class="card-body py-5">
+                <p class="lead text-center">Utilice este formulario para subir un archivo CSV y actualizar o insertar nuevos registros.</p>
+                
+                <!-- Formulario de Subida (Asegúrate de que 'importar_datos' exista en urls.py) -->
+                <form action="{% url 'importar_datos' %}" method="post" enctype="multipart/form-data" class="row g-3 justify-content-center">
+                    {% csrf_token %}
+                    
+                    <div class="col-md-6">
+                        <label for="csv_file" class="form-label fw-bold">Seleccionar archivo CSV</label>
+                        <input class="form-control" type="file" id="csv_file" name="csv_file" accept=".csv" required>
+                        <div class="form-text">
+                            Asegúrese de que el archivo CSV esté codificado en UTF-8 y cumpla con el formato de la plantilla.
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 d-flex align-items-end">
+                        <button type="submit" class="btn btn-success btn-lg w-100">
+                            <i class="fas fa-upload me-2"></i> Subir y Procesar Datos
+                        </button>
+                    </div>
+                </form>
+
+                <hr class="my-4">
+                
+                <div class="text-center">
+                    <h5>¿Necesitas la plantilla de formato?</h5>
+                    <!-- ENLACE A UNA DESCARGA DE PLANTILLA (Asume que tienes una vista 'descargar_plantilla') -->
+                    <a href="{% url 'descargar_plantilla' %}" class="btn btn-outline-secondary btn-sm mt-2">
+                        <i class="fas fa-table me-1"></i> Descargar Plantilla CSV
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+
+{% endblock %}
+
+{% block extra_js %}
+<!-- Asegurarse de que Font Awesome esté cargado para los íconos (asumimos que está en el base.html) -->
+{% endblock %}

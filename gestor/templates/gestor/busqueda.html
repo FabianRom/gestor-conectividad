@@ -1,0 +1,275 @@
+{% extends 'gestor/base.html' %}
+{% load static %}
+
+{% block title %}Búsqueda Avanzada{% endblock %}
+
+{% block extra_css %}
+
+{% endblock %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="card shadow-sm border-0 rounded-4 p-4">
+
+        <header class="mb-4 border-bottom pb-2">
+            <h1 class="h3 fw-bold text-primary"><i class="fas fa-search me-2"></i> Búsqueda Avanzada</h1>
+            <p class="text-secondary small">Use los filtros por identificación, atributos institucionales y estado tecnológico.</p>
+        </header>
+
+        <form method="GET" action="{% url 'resultados_busqueda' %}" class="needs-validation" novalidate id="form-busqueda-avanzada">
+            
+            <div class="filter-group-box mb-4">
+                <h2 class="section-header-custom"><i class="fas fa-map-marker-alt me-2"></i> 1. Identificación y Ubicación</h2>
+                <div class="row g-3 mt-2">
+                    <div class="col-md-3">
+                        <label for="cue" class="form-label fw-medium">CUE</label>
+                        <input type="text" id="cue" name="cue" placeholder="60000000" class="form-control" value="{{ request.GET.cue|default:'' }}">
+                    </div>
+                    <div class="col-md-5">
+                        <label for="nombre" class="form-label fw-medium">Nombre</label>
+                        <input type="text" id="nombre" name="nombre" placeholder="Ej: Escuela Primaria N° 1" class="form-control" value="{{ request.GET.nombre|default:'' }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="predio_numero" class="form-label fw-medium">Nº de Predio</label>
+                        <input type="text" id="predio_numero" name="predio_numero" placeholder="600000" class="form-control" value="{{ request.GET.predio_numero|default:'' }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="region" class="form-label fw-medium">Región Educativa</label>
+                        <select id="region_select" name="region" multiple class="select-multiple form-select">
+                            {% for region in regiones %}
+                                <option value="{{ region.id }}">{{ region.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="distrito" class="form-label fw-medium">Distrito</label>
+                        <select id="distrito_select" name="distrito" multiple class="select-multiple form-select">
+                            {% for distrito in distritos %}
+                                <option value="{{ distrito.id }}">{{ distrito.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="ciudad" class="form-label fw-medium">Ciudad</label>
+                        <select id="ciudad_select" name="ciudad" multiple class="select-multiple form-select">
+                            {% for ciudad in ciudades %}
+                                <option value="{{ ciudad.id }}">{{ ciudad.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-group-box mb-4">
+                <h2 class="section-header-custom"><i class="fas fa-graduation-cap me-2"></i> 2. Atributos Institucionales</h2>
+                <div class="row g-3 mt-2">
+                    <div class="col-md-4">
+                        <label for="dependencia" class="form-label fw-medium">Dependencia</label>
+                        <select id="dependencia_select" name="dependencia" multiple class="select-multiple form-select">
+                            {% for dependencia in dependencias %}
+                                <option value="{{ dependencia.id }}">{{ dependencia.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="ambito" class="form-label fw-medium">Ámbito</label>
+                        <select id="ambito_select" name="ambito" multiple class="select-multiple form-select">
+                            {% for ambito in ambitos %}
+                                <option value="{{ ambito.id }}">{{ ambito.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="turno" class="form-label fw-medium">Turno</label>
+                        <select id="turno_select" name="turno" multiple class="select-multiple form-select">
+                            {% for turno in turnos %}
+                                <option value="{{ turno.id }}">{{ turno.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="categoria" class="form-label fw-medium">Categoría/Nivel</label>
+                        <select id="categoria_select" name="categoria" multiple class="select-multiple form-select">
+                            {% for categoria in categorias %}
+                                <option value="{{ categoria.id }}">{{ categoria.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="tipo_establecimiento" class="form-label fw-medium">Tipo de Establecimiento</label>
+                        <select id="tipo_establecimiento_select" name="tipo_establecimiento" multiple class="select-multiple form-select">
+                            {% for tipo in tipos_establecimiento %}
+                                <option value="{{ tipo.id }}">{{ tipo.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-group-box mb-4">
+                <h2 class="section-header-custom"><i class="fas fa-wifi me-2"></i> 3. Conectividad</h2>
+                <div class="row g-3 mt-2">
+                    
+                    <div class="col-md-4">
+                        <label for="conectividad" class="form-label fw-medium">Estado de Conectividad</label>
+                        <select id="conectividad_select" name="conectividad" multiple class="select-multiple form-select">
+                            {% for estado in estados_conectividad %}
+                                <option value="{{ estado.id }}">{{ estado.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="proveedor_internet" class="form-label fw-medium">Proveedor de Internet</label>
+                        <select id="proveedor_internet_select" name="proveedor_internet" multiple class="select-multiple form-select">
+                            {% for proveedor in proveedores_internet %}
+                                <option value="{{ proveedor.id }}">{{ proveedor.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="ano_conectado" class="form-label fw-medium">Año de Conexión</label>
+                        <input type="number" id="ano_conectado" name="ano_conectado" placeholder="2023" class="form-control" value="{{ request.GET.ano_conectado|default:'' }}">
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-group-box mb-4">
+                <h2 class="section-header-custom"><i class="fas fa-tv me-2"></i> 4. Piso Tecnológico</h2>
+                <div class="row g-3 mt-2">
+                    
+                    <div class="col-md-4">
+                        <label for="programa_conectividad" class="form-label fw-medium">Programa Piso Tecnológico</label>
+                        <select id="programa_conectividad_select" name="programa_conectividad" multiple class="select-multiple form-select">
+                            {% for plan in planes_piso %}
+                                <option value="{{ plan.id }}">{{ plan.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="proveedor_piso" class="form-label fw-medium">Proveedor Piso Tecnológico</label>
+                        <select id="proveedor_piso_select" name="proveedor_piso" multiple class="select-multiple form-select">
+                            {% for proveedor in proveedores_piso %}
+                                <option value="{{ proveedor.id }}">{{ proveedor.nombre }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="ano_finalizacion_piso" class="form-label fw-medium">Año de Finalización</label>
+                        <input type="number" id="ano_finalizacion_piso" name="ano_finalizacion_piso" placeholder="2024" class="form-control" value="{{ request.GET.ano_finalizacion_piso|default:'' }}">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-end gap-3 border-top pt-3 mt-4">
+                <button type="reset" class="btn btn-outline-secondary shadow-sm" id="btn-limpiar">
+    <i class="fas fa-eraser me-2"></i> Limpiar
+</button>
+
+                <button type="submit" class="btn btn-primary shadow-sm">
+                    <i class="fas fa-search me-2"></i> Buscar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{% static 'path/to/select2.min.js' %}"></script>
+
+<script>
+$(document).ready(function() {
+    // 1. Inicializar Select2 en todos los campos de selección múltiple
+    $('.select-multiple').select2({
+        placeholder: "Seleccione una o más opciones",
+        allowClear: true,
+        width: '100%',
+    });
+
+    // 2. Retención del estado de los filtros (Selects Múltiples)
+    const urlParams = new URLSearchParams(window.location.search);
+
+    $('.select-multiple').each(function() {
+        const selectElement = $(this);
+        const name = selectElement.attr('name');
+        
+        // Obtiene todos los valores del parámetro (clave: 'nombre') de la URL
+        const values = urlParams.getAll(name); 
+
+        if (values.length > 0) {
+            selectElement.val(values).trigger('change'); 
+        }
+    });
+
+    // 3. Lógica para el Filtrado en Cascada (Región -> Distrito)
+    
+    function cargarDistritos() {
+        const regionIds = $('#region_select').val();
+        const distritoSelect = $('#distrito_select');
+
+        // Solo limpiar y cargar si hay una región seleccionada
+        if (!regionIds || regionIds.length === 0) {
+            // Si no hay región, limpiar el select de distrito
+            distritoSelect.empty().prop('disabled', false).append(new Option('-- Todos los Distritos --', '')).trigger('change');
+            return;
+        }
+
+        distritoSelect.empty().prop('disabled', true).append(new Option('-- Cargando Distritos --', ''));
+        
+        $.ajax({
+            // **IMPORTANTE**: Reemplaza esta URL por la URL real de tu vista Django
+            url: '{% url "ajax_cargar_distritos" %}', 
+            data: { 
+                'region_ids': regionIds // Envía los IDs de la región
+            },
+            dataType: 'json',
+            traditional: true, // Necesario para enviar arrays de IDs
+            success: function(data) {
+                distritoSelect.empty().prop('disabled', false);
+                distritoSelect.append(new Option('-- Todos los Distritos --', ''));
+                
+                $.each(data.opciones, function(id, nombre) {
+                    distritoSelect.append(new Option(nombre, id));
+                });
+                
+                // Re-aplicar los valores de distrito que vinieron de la URL si existen
+                const selectedDistritos = urlParams.getAll('distrito');
+                if (selectedDistritos.length > 0) {
+                    distritoSelect.val(selectedDistritos);
+                }
+                
+                distritoSelect.trigger('change');
+            },
+            error: function() {
+                distritoSelect.empty().prop('disabled', false).append(new Option('-- Error al cargar Distritos --', ''));
+                distritoSelect.trigger('change');
+            }
+            // 4. Limpiar selects y enfocar CUE
+            $('#form-busqueda-avanzada').on('reset', function () {
+              setTimeout(() => {
+        // limpiar selects múltiples
+             $('.select-multiple').val(null).trigger('change');
+
+        // posicionar cursor en CUE
+              $('#cue').focus();
+            }, 50);
+});
+
+        });
+    }
+
+    // Evento al cambiar la región
+    $('#region_select').on('change', cargarDistritos);
+
+    // Carga Inicial: Si la página tiene parámetros, forzar la carga de distritos para llenar el select
+    if (urlParams.get('region')) {
+        setTimeout(cargarDistritos, 100); 
+    }
+    
+    // NOTA: El filtro de Ciudad ya no está en cascada, por lo que solo necesita la retención de valores inicial (Punto 2).
+
+    
+});
+</script>
+{% endblock %}

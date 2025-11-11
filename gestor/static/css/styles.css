@@ -1,0 +1,176 @@
+/* ============================================================
+   PALETA Y VARIABLES PRINCIPALES
+   ============================================================ */
+:root {
+    --primary-color: #00bcd4;
+    --primary-hover-color: #0097a7;
+    --primary-rgb: 0, 188, 212;
+
+    --dark-color: #2c3e50;
+    --body-bg-color: #f5f7fa;
+    --text-color: #34495e;
+
+    --success-color: #2ecc71;
+    --danger-color: #e74c3c;
+    --info-color: #3498db;
+
+    --card-shadow: 0 2px 6px rgba(0,0,0,0.08), 0 6px 20px rgba(0,0,0,0.06);
+    --card-border-radius: 12px;
+
+    --transition-base: 0.3s ease;
+
+    --dark-bg: #1c1f26;
+    --dark-surface: #2b2f38;
+    --dark-text: #e0e0e0;
+    --dark-border: #3a3f47;
+}
+
+/* ============================================================
+   MODO OSCURO
+   ============================================================ */
+:root[data-theme='dark'] {
+    --body-bg-color: var(--dark-bg);
+    --text-color: var(--dark-text);
+    --dark-color: #121417;
+    --card-shadow: 0 2px 10px rgba(0,0,0,0.4);
+}
+
+/* ============================================================
+   ESTILOS GLOBALES
+   ============================================================ */
+* {
+    transition: color var(--transition-base),
+                background-color var(--transition-base),
+                border-color var(--transition-base);
+}
+
+body {
+    background-color: var(--body-bg-color);
+    font-family: 'Inter', sans-serif;
+    color: var(--text-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* ============================================================
+   BOTONES PRIMARY
+   ============================================================ */
+.btn-primary {
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-hover-color));
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(var(--primary-rgb), 0.3);
+}
+.btn-primary:hover {
+    transform: none; /* sin salto */
+    filter: brightness(0.9); /* oscurecido suave */
+    box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.45);
+}
+
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+.navbar {
+    border-bottom: 3px solid var(--primary-color);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.nav-link:hover {
+    color: var(--primary-color) !important;
+    text-shadow: 0 0 5px rgba(255,255,255,0.4);
+}
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+.card {
+    border: 1px solid #e0e0e0;
+    border-radius: var(--card-border-radius);
+    box-shadow: var(--card-shadow);
+    background-color: #fff;
+}
+:root[data-theme='dark'] .card {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border);
+}
+.card:hover {
+    transform: none; /* sin salto */
+    border-color: var(--primary-color);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.20);
+    filter: brightness(0.97); /* leve oscurecido */
+}
+
+/* ============================================================
+   DASHBOARD STATS
+   ============================================================ */
+.stat-card {
+    text-align: center;
+    padding: 20px;
+}
+.stat-card .stat-icon {
+    font-size: 3rem;
+    color: var(--primary-color);
+    opacity: 0.8;
+}
+.stat-card .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--dark-color);
+}
+
+/* ============================================================
+   TABLAS
+   ============================================================ */
+.results-table thead th {
+    background-color: var(--dark-color) !important;
+    color: #fff;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+}
+.results-table tbody tr:nth-child(even) {
+    background-color: rgba(var(--primary-rgb), 0.02);
+}
+.results-table tbody tr:hover {
+    background-color: rgba(var(--primary-rgb), 0.08);
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+footer {
+    background: linear-gradient(180deg, var(--dark-color), #1a252f);
+    color: #fff;
+    text-align: center;
+    padding: 1rem 0;
+}
+
+/* Mejoras de formulario en el mapa */
+.filtro-mapa .form-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.filtro-mapa .form-control,
+.filtro-mapa .form-select {
+    font-size: 0.9rem;
+    padding: 6px 8px;
+}
+
+@media (max-width: 768px) {
+    .filtro-mapa {
+        gap: 12px;
+    }
+    .filtro-mapa .col-md-2,
+    .filtro-mapa .col-md-3 {
+        flex: 0 0 100%;
+    }
+    .btn.w-100 {
+        font-size: 1rem;
+        padding: 10px;
+    }
+}

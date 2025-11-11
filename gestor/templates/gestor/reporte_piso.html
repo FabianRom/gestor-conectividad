@@ -1,0 +1,44 @@
+{% extends 'gestor/base.html' %}
+
+{% block title %}Reporte de Piso Tecnológico{% endblock %}
+
+{% block content %}
+    <h1 class="mb-4"><i class="fas fa-tv me-2"></i> {{ titulo_reporte }}</h1>
+
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-4">
+            <div class="card text-center stat-card h-100 bg-info text-white shadow-lg">
+                <div class="card-body py-4">
+                    <h5 class="card-title fw-bold text-uppercase">Tasa de Cobertura</h5>
+                    <p class="card-text fs-1 fw-bolder">{{ tasa_cobertura|default:"0.0" }}%</p>
+                    <p class="card-text text-light small mt-2">
+                        De **{{ total_escuelas|default:"0" }}** escuelas totales.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="section-title mt-4"><i class="fas fa-chart-bar me-2"></i> Detalle de Conteo</h2>
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card stat-card h-100 border-info">
+                <div class="card-body">
+                    <i class="fas fa-tv stat-icon text-info"></i>
+                    <div class="stat-value text-info">{{ con_piso|default:"0" }}</div>
+                    <div class="stat-label text-uppercase">Escuelas con Piso Tecnológico</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <div class="card stat-card h-100 border-secondary">
+                <div class="card-body">
+                    <i class="fas fa-desktop stat-icon text-secondary"></i>
+                    <div class="stat-value text-secondary">{{ sin_piso|default:"0" }}</div>
+                    <div class="stat-label text-uppercase">Escuelas Sin Piso Tecnológico</div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
