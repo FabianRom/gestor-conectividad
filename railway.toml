@@ -1,0 +1,6 @@
+[build]
+builder = "paketobuildpacks/builder:base"
+
+[deploy]
+startCommand = "gunicorn ges_proyecto.wsgi"
+healthcheckPath = "/"
